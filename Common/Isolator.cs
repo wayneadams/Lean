@@ -83,7 +83,7 @@ namespace QuantConnect
                 : Task.Factory.StartNew(() => workerThread.FinishedWorkItem.WaitOne(), CancellationTokenSource.Token);
             try
             {
-                return MonitorTask(task, timeSpan, withinCustomLimits, memoryCap, sleepIntervalMillis);
+                return MonitorTask(task, timeSpan, withinCustomLimits, memoryCap, sleepIntervalMillis, workerThread);
             }
             catch (Exception)
             {
@@ -100,7 +100,8 @@ namespace QuantConnect
             TimeSpan timeSpan,
             Func<IsolatorLimitResult> withinCustomLimits,
             long memoryCap = 1024,
-            int sleepIntervalMillis = 1000)
+            int sleepIntervalMillis = 1000,
+            WorkerThread workerThread = null)
         {
             // default to always within custom limits
             withinCustomLimits = withinCustomLimits ?? (() => new IsolatorLimitResult(TimeSpan.Zero, string.Empty));
@@ -180,6 +181,11 @@ namespace QuantConnect
             if (message != "")
             {
                 CancellationTokenSource.Cancel();
+                var stackTrace = workerThread?.GetStackTrace();
+                if (!stackTrace.IsNullOrEmpty())
+                {
+                    message += $". StackTrace:\n{stackTrace}";
+                }
                 Log.Error($"Security.ExecuteWithTimeLimit(): {message}");
                 throw new TimeoutException(message);
             }

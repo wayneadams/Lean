@@ -15,7 +15,10 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using Microsoft.Diagnostics.Runtime;
 using QuantConnect.Logging;
 
 namespace QuantConnect.Util
@@ -79,6 +82,42 @@ namespace QuantConnect.Util
         public void Add(Action action)
         {
             _blockingCollection.Add(action);
+        }
+
+        /// <summary>
+        /// Get Stack Trace
+        /// </summary>
+        public string GetStackTrace()
+        {
+            var result = "";
+            var pid = Process.GetCurrentProcess().Id;
+            using (var dataTarget = DataTarget.AttachToProcess(pid, 5000, AttachFlag.Passive))
+            {
+                ClrInfo runtimeInfo = dataTarget.ClrVersions[0];
+                var runtime = runtimeInfo.CreateRuntime();
+                _workerThread.Suspend();
+                foreach (var thread in runtime.Threads)
+                {
+                    var stack = string.Join("\n", thread.StackTrace.Select(
+                        f =>
+                        {
+                            if (f.Method != null)
+                            {
+                                return f.Method.Type.Name + "." + f.Method.Name;
+                            }
+
+                            return null;
+                        }
+                    ));
+                    if (!stack.IsNullOrEmpty())
+                    {
+                        var isoletorThread = thread.IsUserSuspended;
+                        result += $"OSThreadId: {thread.OSThreadId}. IsIsolatorThread: {isoletorThread}:" + stack + "\n";
+                    }
+                }
+                _workerThread.Resume();
+            }
+            return result;
         }
 
         /// <summary>
