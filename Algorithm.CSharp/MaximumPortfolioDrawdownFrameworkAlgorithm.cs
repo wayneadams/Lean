@@ -67,22 +67,22 @@ namespace QuantConnect.Algorithm.CSharp
         {
             {"Total Trades", "2"},
             {"Average Win", "0%"},
-            {"Average Loss", "-0.97%"},
-            {"Compounding Annual Return", "-50.923%"},
+            {"Average Loss", "-0.98%"},
+            {"Compounding Annual Return", "-51.351%"},
             {"Drawdown", "1.500%"}, // Should be less than or equal to max trailing drawdown
             {"Expectancy", "-1"},
-            {"Net Profit", "-0.970%"}, // Should be less than or equal to max absolute drawdown
-            {"Sharpe Ratio", "-6.459"},
+            {"Net Profit", "-0.982%"}, // Should be less than or equal to max absolute drawdown
+            {"Sharpe Ratio", "-6.554"},
             {"Loss Rate", "100%"},
             {"Win Rate", "0%"},
             {"Profit-Loss Ratio", "0"},
-            {"Alpha", "-0.456"},
+            {"Alpha", "-0.461"},
             {"Beta", "0.135"},
             {"Annual Standard Deviation", "0.063"},
             {"Annual Variance", "0.004"},
-            {"Information Ratio", "-4.418"},
+            {"Information Ratio", "-4.45"},
             {"Tracking Error", "0.173"},
-            {"Treynor Ratio", "-3.023"},
+            {"Treynor Ratio", "-3.055"},
             {"Total Fees", "$6.51"}
         };
     }
